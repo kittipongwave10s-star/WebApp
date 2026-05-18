@@ -1,0 +1,76 @@
+function renderKpiDashboard() {
+  const data = APP.state.kpiDashboard || {};
+
+  return `
+    ${renderHero('Dashboard KPI', 'ภาพรวมการใช้งาน Dock จากข้อมูล Archive หลัง Generate')}
+    <div class="kpi-grid">
+      <div class="kpi blue">
+        <div class="kpi-circle"></div>
+        <div class="label">Usage ทั้งหมด</div>
+        <div class="value">${escapeHtml(data.totalUsage || 0)}</div>
+      </div>
+      <div class="kpi red">
+        <div class="kpi-circle"></div>
+        <div class="label">Outbound Usage</div>
+        <div class="value">${escapeHtml(data.outboundUsage || 0)}</div>
+      </div>
+      <div class="kpi cyan">
+        <div class="kpi-circle"></div>
+        <div class="label">Inbound Usage</div>
+        <div class="value">${escapeHtml(data.inboundUsage || 0)}</div>
+      </div>
+      <div class="kpi yellow">
+        <div class="kpi-circle"></div>
+        <div class="label">ใช้งานร่วมกัน</div>
+        <div class="value">${escapeHtml(data.sharedUsage || 0)}</div>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-top:18px;">
+      <div class="card">
+        <div class="card-title">Top Used Dock</div>
+        ${renderSimpleRankTable(data.topDocks || [], 'Dock', 'Usage')}
+      </div>
+      <div class="card">
+        <div class="card-title">Usage by Department</div>
+        ${renderSimpleRankTable(data.usageByDept || [], 'Department', 'Usage')}
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-top:18px;">
+      <div class="card">
+        <div class="card-title">Usage by Date</div>
+        ${renderSimpleRankTable(data.usageByDate || [], 'Date', 'Usage')}
+      </div>
+      <div class="card">
+        <div class="card-title">Top Customer / Route</div>
+        ${renderSimpleRankTable(data.topCustomers || [], 'Customer / Route', 'Usage')}
+      </div>
+    </div>
+  `;
+}
+
+function renderSimpleRankTable(rows, labelName, valueName) {
+  const data = Array.isArray(rows) ? rows : [];
+
+  return `
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>${escapeHtml(labelName)}</th>
+            <th>${escapeHtml(valueName)}</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${data.length ? data.map(row => `
+            <tr>
+              <td>${escapeHtml(row.name || '-')}</td>
+              <td>${escapeHtml(row.value || 0)}</td>
+            </tr>
+          `).join('') : `<tr><td colspan="2" style="text-align:center;">ยังไม่มีข้อมูล</td></tr>`}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
