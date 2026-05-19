@@ -17,10 +17,10 @@
 
     .iframe-wrap {
       position: fixed;
-      top: -64px;
+      top: -36px;
       left: 0;
       width: 100vw;
-      height: calc(100vh + 64px);
+      height: calc(100vh + 36px);
       overflow: hidden;
       background: #000;
     }
@@ -58,7 +58,7 @@
         if (!currentParams.has('theme')) currentParams.set('theme', 'red');
       }
 
-      currentParams.set('_ts', Date.now());
+      currentParams.set('_v', Date.now());
 
       currentParams.forEach((value, key) => {
         targetUrl.searchParams.set(key, value);
@@ -67,16 +67,7 @@
       return targetUrl.toString();
     }
 
-    function loadIframe() {
-      iframe.src = buildWebAppUrl();
-    }
-
-    function refreshIframe() {
-      iframe.src = buildWebAppUrl();
-    }
-
-    loadIframe();
-    setInterval(refreshIframe, 15000);
+    iframe.src = buildWebAppUrl();
   </script>
 </body>
 </html>
