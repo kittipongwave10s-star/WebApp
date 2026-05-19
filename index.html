@@ -1,76 +1,82 @@
-function renderKpiDashboard() {
-  const data = APP.state.kpiDashboard || {};
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BPI Smart Dock TV</title>
 
-  return `
-    ${renderHero('Dashboard KPI', 'ภาพรวมการใช้งาน Dock จากข้อมูล Archive หลัง Generate')}
-    <div class="kpi-grid">
-      <div class="kpi blue">
-        <div class="kpi-circle"></div>
-        <div class="label">Usage ทั้งหมด</div>
-        <div class="value">${escapeHtml(data.totalUsage || 0)}</div>
-      </div>
-      <div class="kpi red">
-        <div class="kpi-circle"></div>
-        <div class="label">Outbound Usage</div>
-        <div class="value">${escapeHtml(data.outboundUsage || 0)}</div>
-      </div>
-      <div class="kpi cyan">
-        <div class="kpi-circle"></div>
-        <div class="label">Inbound Usage</div>
-        <div class="value">${escapeHtml(data.inboundUsage || 0)}</div>
-      </div>
-      <div class="kpi yellow">
-        <div class="kpi-circle"></div>
-        <div class="label">ใช้งานร่วมกัน</div>
-        <div class="value">${escapeHtml(data.sharedUsage || 0)}</div>
-      </div>
-    </div>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+    }
 
-    <div class="grid-2" style="margin-top:18px;">
-      <div class="card">
-        <div class="card-title">Top Used Dock</div>
-        ${renderSimpleRankTable(data.topDocks || [], 'Dock', 'Usage')}
-      </div>
-      <div class="card">
-        <div class="card-title">Usage by Department</div>
-        ${renderSimpleRankTable(data.usageByDept || [], 'Department', 'Usage')}
-      </div>
-    </div>
+    .iframe-wrap {
+      position: fixed;
+      top: -64px;
+      left: 0;
+      width: 100vw;
+      height: calc(100vh + 64px);
+      overflow: hidden;
+      background: #000;
+    }
 
-    <div class="grid-2" style="margin-top:18px;">
-      <div class="card">
-        <div class="card-title">Usage by Date</div>
-        ${renderSimpleRankTable(data.usageByDate || [], 'Date', 'Usage')}
-      </div>
-      <div class="card">
-        <div class="card-title">Top Customer / Route</div>
-        ${renderSimpleRankTable(data.topCustomers || [], 'Customer / Route', 'Usage')}
-      </div>
-    </div>
-  `;
-}
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+      background: #000;
+    }
+  </style>
+</head>
 
-function renderSimpleRankTable(rows, labelName, valueName) {
-  const data = Array.isArray(rows) ? rows : [];
+<body>
+  <div class="iframe-wrap">
+    <iframe id="dockFrame" allowfullscreen></iframe>
+  </div>
 
-  return `
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>${escapeHtml(labelName)}</th>
-            <th>${escapeHtml(valueName)}</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${data.length ? data.map(row => `
-            <tr>
-              <td>${escapeHtml(row.name || '-')}</td>
-              <td>${escapeHtml(row.value || 0)}</td>
-            </tr>
-          `).join('') : `<tr><td colspan="2" style="text-align:center;">ยังไม่มีข้อมูล</td></tr>`}
-        </tbody>
-      </table>
-    </div>
-  `;
-}
+  <script>
+    const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbw1wiBByN1av_78-1grWP2CDhyjAm8uqV4Dm136NP0NWgvcVCgFN1cyCquRr4j3mK-S/exec';
+    const iframe = document.getElementById('dockFrame');
+
+    function buildWebAppUrl() {
+      const currentParams = new URLSearchParams(window.location.search);
+      const targetUrl = new URL(WEBAPP_URL);
+
+      if (!currentParams.has('page')) {
+        currentParams.set('page', 'tv-pair');
+      }
+
+      if (currentParams.get('page') === 'tv-pair') {
+        if (!currentParams.has('left')) currentParams.set('left', 'BPI-D001');
+        if (!currentParams.has('right')) currentParams.set('right', 'BPI-D002');
+        if (!currentParams.has('theme')) currentParams.set('theme', 'red');
+      }
+
+      currentParams.set('_ts', Date.now());
+
+      currentParams.forEach((value, key) => {
+        targetUrl.searchParams.set(key, value);
+      });
+
+      return targetUrl.toString();
+    }
+
+    function loadIframe() {
+      iframe.src = buildWebAppUrl();
+    }
+
+    function refreshIframe() {
+      iframe.src = buildWebAppUrl();
+    }
+
+    loadIframe();
+    setInterval(refreshIframe, 15000);
+  </script>
+</body>
+</html>
