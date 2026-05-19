@@ -8,9 +8,9 @@
   <style>
     :root {
       --apps-script-top-bar-height: 36px;
-      --content-scale: 0.86;
-      --content-left: 7vw;
-      --iframe-top: -30.96px;
+      --content-scale: 1;
+      --content-left: 0vw;
+      --iframe-top: -36px;
       background: #000;
     }
 
@@ -88,7 +88,7 @@
       const currentParams = new URLSearchParams(window.location.search);
       const targetUrl = new URL(WEBAPP_URL);
 
-      applyScale(currentParams);
+      // applyScale(currentParams);
 
       if (!currentParams.has('page')) {
         currentParams.set('page', 'tv-pair');
