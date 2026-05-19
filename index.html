@@ -8,9 +8,9 @@
   <style>
     :root {
       --apps-script-top-bar-height: 36px;
-      --content-scale: 0.9;
-      --content-width: 111.111vw;
-      --content-height: calc(111.111dvh + 40px);
+      --content-scale: 0.86;
+      --content-left: 7vw;
+      --iframe-top: -30.96px;
       background: #000;
     }
 
@@ -47,10 +47,11 @@
 
     iframe {
       position: absolute;
-      top: calc(var(--apps-script-top-bar-height) * -1);
-      left: 0;
-      width: var(--content-width);
-      height: var(--content-height);
+      top: var(--iframe-top);
+      left: var(--content-left);
+      width: 100vw;
+      height: calc(100vh + var(--apps-script-top-bar-height));
+      height: calc(100dvh + var(--apps-script-top-bar-height));
       border: 0;
       display: block;
       background: #000;
@@ -71,13 +72,13 @@
     const iframe = document.getElementById('dockFrame');
 
     function applyScale(params) {
-      const rawScale = Number(params.get('scale') || params.get('zoom') || 0.9);
-      const scale = Number.isFinite(rawScale) ? Math.min(1, Math.max(0.75, rawScale)) : 0.9;
-      const inverse = 100 / scale;
+      const rawScale = Number(params.get('scale') || params.get('zoom') || 0.86);
+      const scale = Number.isFinite(rawScale) ? Math.min(1, Math.max(0.7, rawScale)) : 0.86;
+      const sideMargin = (100 - (scale * 100)) / 2;
 
       document.documentElement.style.setProperty('--content-scale', String(scale));
-      document.documentElement.style.setProperty('--content-width', inverse + 'vw');
-      document.documentElement.style.setProperty('--content-height', 'calc(' + inverse + 'dvh + ' + (TOP_BAR_HEIGHT / scale) + 'px)');
+      document.documentElement.style.setProperty('--content-left', sideMargin + 'vw');
+      document.documentElement.style.setProperty('--iframe-top', -(TOP_BAR_HEIGHT * scale) + 'px');
 
       params.delete('scale');
       params.delete('zoom');
