@@ -2,32 +2,53 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>BPI Smart Dock TV</title>
 
   <style>
-    html, body {
+    :root {
+      --apps-script-top-bar-height: 36px;
+      background: #000;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
       margin: 0;
       padding: 0;
       width: 100%;
       height: 100%;
+      min-height: 100%;
       overflow: hidden;
       background: #000;
     }
 
+    body {
+      position: fixed;
+      inset: 0;
+      overscroll-behavior: none;
+    }
+
     .iframe-wrap {
       position: fixed;
-      top: -36px;
-      left: 0;
+      inset: 0;
       width: 100vw;
-      height: calc(100vh + 36px);
+      height: 100vh;
+      height: 100dvh;
       overflow: hidden;
       background: #000;
     }
 
     iframe {
+      position: absolute;
+      top: calc(var(--apps-script-top-bar-height) * -1);
+      left: 0;
       width: 100%;
-      height: 100%;
+      height: calc(100vh + var(--apps-script-top-bar-height));
+      height: calc(100dvh + var(--apps-script-top-bar-height));
       border: 0;
       display: block;
       background: #000;
@@ -37,7 +58,7 @@
 
 <body>
   <div class="iframe-wrap">
-    <iframe id="dockFrame" allowfullscreen></iframe>
+    <iframe id="dockFrame" title="BPI Smart Dock TV" allowfullscreen></iframe>
   </div>
 
   <script>
@@ -57,8 +78,6 @@
         if (!currentParams.has('right')) currentParams.set('right', 'BPI-D002');
         if (!currentParams.has('theme')) currentParams.set('theme', 'red');
       }
-
-      currentParams.set('_v', Date.now());
 
       currentParams.forEach((value, key) => {
         targetUrl.searchParams.set(key, value);
