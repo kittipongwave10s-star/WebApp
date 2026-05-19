@@ -8,6 +8,9 @@
   <style>
     :root {
       --apps-script-top-bar-height: 36px;
+      --content-scale: 0.9;
+      --content-width: 111.111vw;
+      --content-height: calc(111.111dvh + 40px);
       background: #000;
     }
 
@@ -46,12 +49,13 @@
       position: absolute;
       top: calc(var(--apps-script-top-bar-height) * -1);
       left: 0;
-      width: 100%;
-      height: calc(100vh + var(--apps-script-top-bar-height));
-      height: calc(100dvh + var(--apps-script-top-bar-height));
+      width: var(--content-width);
+      height: var(--content-height);
       border: 0;
       display: block;
       background: #000;
+      transform: scale(var(--content-scale));
+      transform-origin: top left;
     }
   </style>
 </head>
@@ -63,11 +67,27 @@
 
   <script>
     const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbw1wiBByN1av_78-1grWP2CDhyjAm8uqV4Dm136NP0NWgvcVCgFN1cyCquRr4j3mK-S/exec';
+    const TOP_BAR_HEIGHT = 36;
     const iframe = document.getElementById('dockFrame');
+
+    function applyScale(params) {
+      const rawScale = Number(params.get('scale') || params.get('zoom') || 0.9);
+      const scale = Number.isFinite(rawScale) ? Math.min(1, Math.max(0.75, rawScale)) : 0.9;
+      const inverse = 100 / scale;
+
+      document.documentElement.style.setProperty('--content-scale', String(scale));
+      document.documentElement.style.setProperty('--content-width', inverse + 'vw');
+      document.documentElement.style.setProperty('--content-height', 'calc(' + inverse + 'dvh + ' + (TOP_BAR_HEIGHT / scale) + 'px)');
+
+      params.delete('scale');
+      params.delete('zoom');
+    }
 
     function buildWebAppUrl() {
       const currentParams = new URLSearchParams(window.location.search);
       const targetUrl = new URL(WEBAPP_URL);
+
+      applyScale(currentParams);
 
       if (!currentParams.has('page')) {
         currentParams.set('page', 'tv-pair');
